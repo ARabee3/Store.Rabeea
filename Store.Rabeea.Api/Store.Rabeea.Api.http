@@ -1,0 +1,6 @@
+@Store.Rabeea.Api_HostAddress = http://localhost:5139
+
+GET {{Store.Rabeea.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
