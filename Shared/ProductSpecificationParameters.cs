@@ -11,6 +11,7 @@ namespace Shared
     {
         public int? BrandId { get; set; }
         public int? TypeId { get; set; }
+        public string? Search { get; set; }
         public string? Sort { get; set; }
         private int _pageIndex = 1;
         [DefaultValue(1)]
@@ -26,6 +27,6 @@ namespace Shared
             get { return _pageSize; }
             set { _pageSize = value; }
         }
-
+        
     }
 }
