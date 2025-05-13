@@ -9,9 +9,9 @@ namespace Presentation
         private readonly IServiceManager _serviceManager = serviceManager;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort)
+        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5)
         {
-            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId,typeId,sort);
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId,typeId,sort,pageIndex,pageSize);
             if (result is null) return BadRequest();
             return Ok(result);
         }

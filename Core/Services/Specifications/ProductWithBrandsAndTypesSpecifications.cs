@@ -15,13 +15,14 @@ namespace Services.Specifications
         {
             ApplyIncludes();
         }
-        public ProductWithBrandsAndTypesSpecifications(int? brandId, int? typeId, string sort) : base(
+        public ProductWithBrandsAndTypesSpecifications(int? brandId, int? typeId, string sort, int pageIndex,int pageSize) : base(
             p => (!brandId.HasValue || p.BrandId == brandId) &&
                  (!typeId.HasValue || p.TypeId == typeId)
             )
         {
             ApplyIncludes();
             ApplySorting(sort);
+            ApplyPagination(pageIndex, pageSize);
         }
         private void ApplyIncludes()
         {
