@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Presentation
 {
     [ApiController]
@@ -15,9 +9,9 @@ namespace Presentation
         private readonly IServiceManager _serviceManager = serviceManager;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort)
         {
-            var result = await _serviceManager.ProductService.GetAllProductsAsync();
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId,typeId,sort);
             if (result is null) return BadRequest();
             return Ok(result);
         }

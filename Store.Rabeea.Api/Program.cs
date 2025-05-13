@@ -15,7 +15,7 @@ namespace Store.Rabeea.Api
     public class Program
     {
         public static async Task Main(string[] args)
-        {
+       {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -31,9 +31,10 @@ namespace Store.Rabeea.Api
             });
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServiceManager,ServiceManager>();
+            builder.Services.AddScoped<IServiceManager,ServiceManager>();
             builder.Services.AddScoped<ConcurrentDictionary<string, object>>();
             builder.Services.AddAutoMapper(typeof(AssemblyReference));
-
+            builder.Services.AddHttpContextAccessor();
             var app = builder.Build();
             #region seeding
             using var scope = app.Services.CreateScope();
@@ -48,9 +49,9 @@ namespace Store.Rabeea.Api
             }
 
             app.UseHttpsRedirection();
-
+            
             app.UseAuthorization();
-
+            app.UseStaticFiles();
             
             app.MapControllers();
 
