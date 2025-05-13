@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Shared;
 namespace Presentation
 {
     [ApiController]
@@ -9,9 +10,9 @@ namespace Presentation
         private readonly IServiceManager _serviceManager = serviceManager;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5)
+        public async Task<IActionResult> GetAllProducts([FromQuery]ProductSpecificationParameters specParams)
         {
-            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId,typeId,sort,pageIndex,pageSize);
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(specParams);
             if (result is null) return BadRequest();
             return Ok(result);
         }

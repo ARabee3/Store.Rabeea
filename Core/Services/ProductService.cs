@@ -11,13 +11,17 @@ namespace Services
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5)
+        public async Task<PaginationResponse<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParameters specParams)
         {
-            var spec = new ProductWithBrandsAndTypesSpecifications(brandId,typeId,sort,pageIndex,pageSize);
+            var spec = new ProductWithBrandsAndTypesSpecifications(specParams);
             
             var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(spec);
+            var specCount = new ProductWithCountSpecification(specParams);
+            var count = await _unitOfWork.GetRepository<Product, int>().CountAsync(specCount);
+
             var result = _mapper.Map<IEnumerable<ProductResultDto>>(products);
-            return result;
+          
+            return new PaginationResponse<ProductResultDto>(specParams.PageIndex,specParams.PageSize,count,result);
         }
         public async Task<ProductResultDto?> GetProductByIdAsync(int id)
         {
