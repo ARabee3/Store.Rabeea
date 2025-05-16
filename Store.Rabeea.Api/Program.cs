@@ -8,6 +8,7 @@ using Persistence.Repositories;
 using Services;
 using Services.Abstractions;
 using Services.MappingProfiles;
+using Store.Rabeea.Api.Middlewares;
 using System.Collections.Concurrent;
 
 namespace Store.Rabeea.Api
@@ -36,6 +37,7 @@ namespace Store.Rabeea.Api
             builder.Services.AddAutoMapper(typeof(AssemblyReference));
             builder.Services.AddHttpContextAccessor();
             var app = builder.Build();
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             #region seeding
             using var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
