@@ -49,6 +49,7 @@ public class GlobalErrorHandlingMiddleware
         response.StatusCode = ex switch
         {
             NotFoundException => 404,
+            BadRequestException => 400,
             _ => 500
         };
         context.Response.StatusCode = response.StatusCode;
