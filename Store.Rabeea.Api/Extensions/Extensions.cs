@@ -4,6 +4,7 @@ using Persistence;
 using Store.Rabeea.Api.ErrorsModels;
 using Domain.Contracts;
 using Store.Rabeea.Api.Middlewares;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 namespace Store.Rabeea.Api.Extensions;
 
 public static class Extensions

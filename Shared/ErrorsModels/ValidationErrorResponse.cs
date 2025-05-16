@@ -1,4 +1,6 @@
-﻿namespace Store.Rabeea.Api.ErrorsModels;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Store.Rabeea.Api.ErrorsModels;
 
 public class ValidationErrorResponse
 {
