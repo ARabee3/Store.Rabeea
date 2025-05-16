@@ -1,13 +1,12 @@
 
 using Domain.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Writers;
 using Persistence;
 using Persistence.Data;
-using Persistence.Repositories;
 using Services;
 using Services.Abstractions;
-using Services.MappingProfiles;
+using Store.Rabeea.Api.ErrorsModels;
 using Store.Rabeea.Api.Middlewares;
 using System.Collections.Concurrent;
 
@@ -36,6 +35,27 @@ namespace Store.Rabeea.Api
             builder.Services.AddScoped<ConcurrentDictionary<string, object>>();
             builder.Services.AddAutoMapper(typeof(AssemblyReference));
             builder.Services.AddHttpContextAccessor();
+            builder.Services.Configure<ApiBehaviorOptions>(config =>
+                config.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                    var errors = actionContext.ModelState.Where(m => m.Value.Errors.Any())
+                            .Select(m => new ValidationError()
+                            {
+                                Field = m.Key,
+                                Errors = m.Value.Errors.Select(errors => errors.ErrorMessage)
+                            });
+                    var response = new ValidationErrorResponse()
+                    {
+                        Errors = errors
+                    };
+                    return new BadRequestObjectResult(response);
+                }
+
+            );
+
+
+
+
             var app = builder.Build();
             app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             #region seeding

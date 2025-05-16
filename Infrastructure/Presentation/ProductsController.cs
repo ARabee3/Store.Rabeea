@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Shared;
 namespace Presentation
@@ -21,7 +22,7 @@ namespace Presentation
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _serviceManager.ProductService.GetProductByIdAsync(id);
-            if (result is null) return NotFound($"There is no Product associated with {id}");
+            if (result is null) throw new ProductNotFoundException(id);
             return Ok(result);
         }
         [HttpGet("brands")]

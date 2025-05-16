@@ -1,4 +1,5 @@
-﻿using Store.Rabeea.Api.ErrorsModels;
+﻿using Domain.Exceptions;
+using Store.Rabeea.Api.ErrorsModels;
 
 namespace Store.Rabeea.Api.Middlewares;
 
@@ -16,6 +17,17 @@ public class GlobalErrorHandlingMiddleware
     {
         try {
             await _next.Invoke(context);
+            // Catch the 404 not found for the path
+            if(context.Response.StatusCode == StatusCodes.Status404NotFound)
+            {
+                context.Response.ContentType = "application/json";
+                var response = new ErrorDetails()
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    ErrorMessage = $"Endpoint {context.Request.Path} is not found"
+                };
+                await context.Response.WriteAsJsonAsync(response);
+            }
         }
         catch(Exception ex)
         {
@@ -27,14 +39,19 @@ public class GlobalErrorHandlingMiddleware
             // 2. Set Content Type
             // 3. Set Response Object (Body)
             // 4. return response
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
             var response = new ErrorDetails()
             {
-                StatusCode = StatusCodes.Status500InternalServerError,
                 ErrorMessage = ex.Message
             };
+            response.StatusCode = ex switch
+            {
+                NotFoundException => 404,
+                _ => 500
+            };
+            context.Response.StatusCode = response.StatusCode;
+
             await context.Response.WriteAsJsonAsync(response);
         }
         
