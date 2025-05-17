@@ -27,6 +27,7 @@ namespace Persistence
             });
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddScoped<ICacheRepository, CacheRepository>();
             services.AddScoped<ConcurrentDictionary<string, object>>();
             services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
             {
