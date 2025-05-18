@@ -50,6 +50,8 @@ public class GlobalErrorHandlingMiddleware
         {
             NotFoundException => 404,
             BadRequestException => 400,
+            ValidationException => HandleValidationExceptionAsync((ValidationException)ex,response),
+            UnauthorizedException => 401,
             _ => 500
         };
         context.Response.StatusCode = response.StatusCode;
@@ -66,5 +68,10 @@ public class GlobalErrorHandlingMiddleware
             ErrorMessage = $"Endpoint {context.Request.Path} is not found"
         };
         await context.Response.WriteAsJsonAsync(response);
+    } 
+    private static int HandleValidationExceptionAsync(ValidationException ex, ErrorDetails response)
+    {
+        response.Errors = ex.Errors;
+        return StatusCodes.Status400BadRequest;
     }
 }
