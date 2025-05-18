@@ -5,6 +5,9 @@ using Store.Rabeea.Api.ErrorsModels;
 using Domain.Contracts;
 using Store.Rabeea.Api.Middlewares;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
 namespace Store.Rabeea.Api.Extensions;
 
 public static class Extensions
@@ -13,6 +16,7 @@ public static class Extensions
     {
 
         services.AddBuiltInServices();
+        services.AddIdentityServices();
         services.AddSwaggerServices();
       
         services.AddInfraStructureServices(configuration);
@@ -49,6 +53,12 @@ public static class Extensions
 
         return services;
     }
+    private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    {
+        services.AddIdentity<AppUser, IdentityRole>()
+            .AddEntityFrameworkStores<StoreIdentityDbContext>();
+        return services;
+    }
     private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
@@ -82,6 +92,7 @@ public static class Extensions
         using var scope = app.Services.CreateScope();
         var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
         await dbInitializer.InitializeAsync();
+        await dbInitializer.InitializeIdentityAsync();
         return app;
     }
     private static WebApplication UseGlobalErrorHandling(this WebApplication app)
