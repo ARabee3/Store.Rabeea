@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Services;
-using Persistence;
-using Store.Rabeea.Api.ErrorsModels;
-using Domain.Contracts;
-using Store.Rabeea.Api.Middlewares;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using Domain.Contracts;
 using Domain.Models.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Persistence;
 using Persistence.Identity;
+using Services;
+using Shared;
+using Store.Rabeea.Api.ErrorsModels;
+using Store.Rabeea.Api.Middlewares;
+using System.Text;
 namespace Store.Rabeea.Api.Extensions;
 
 public static class Extensions
@@ -18,12 +23,13 @@ public static class Extensions
         services.AddBuiltInServices();
         services.AddIdentityServices();
         services.AddSwaggerServices();
-      
+
+        services.ConfigureJwtServices(configuration);   
         services.AddInfraStructureServices(configuration);
         services.AddApplicationServices();
 
         services.ConfigureServices();
-       
+
         return services;
     }
     public static async Task<WebApplication> ConfigureMiddlewares(this WebApplication app)
@@ -37,7 +43,7 @@ public static class Extensions
         }
 
         app.UseHttpsRedirection();
-
+        app.UseAuthentication();
         app.UseAuthorization();
         app.UseStaticFiles();
 
@@ -50,6 +56,31 @@ public static class Extensions
     {
         services.AddControllers();
         services.AddHttpContextAccessor();
+
+        return services;
+    }
+    private static IServiceCollection ConfigureJwtServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }
+        ).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidIssuer = jwtOptions.Issuer,
+                ValidAudience = jwtOptions.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+
+            };
+        });
 
         return services;
     }
