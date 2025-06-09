@@ -36,6 +36,7 @@ namespace Persistence
             services.AddScoped<ConcurrentDictionary<string, object>>();
             services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
             {
+                
                 return ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!);
             });
             return services;
